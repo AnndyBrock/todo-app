@@ -22,7 +22,7 @@ export default class App extends Component{
     onUpdate = (text) =>{
         const len= this.state.itemList.length;
         let newId = 1;
-        if(this.state.itemList.length!=0){
+        if(this.state.itemList.length!==0){
             newId = this.state.itemList[len-1].id+1
         }
           const item = {
