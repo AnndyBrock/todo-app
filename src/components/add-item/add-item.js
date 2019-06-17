@@ -16,10 +16,12 @@ export default class AddItem extends Component{
     };
     onSubmit = (e) =>{
         e.preventDefault();
-        this.props.onUpdate(this.state.label);
-        this.setState({
-            label: ''
-        })
+        if(this.state.label!=='') {
+            this.props.onUpdate(this.state.label);
+            this.setState({
+                label: ''
+            })
+        }
     };
 
     render() {

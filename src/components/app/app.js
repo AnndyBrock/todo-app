@@ -10,16 +10,21 @@ export default class App extends Component{
     constructor() {
         super();
         this.state = {
+            term:'',
+            filter:'all',
             itemList: [
                 {label: 'Coffee',done:false, important: false, id: 1},
                 {label: 'Tea',done:false, important: false, id: 2},
-                {label: 'React',done:true, important: false, id: 3}
+                {label: 'React',done:false, important: false, id: 3}
             ]
         }
     };
     onUpdate = (text) =>{
         const len= this.state.itemList.length;
-        const newId = this.state.itemList[len-1].id+1;
+        let newId = 1;
+        if(this.state.itemList.length!=0){
+            newId = this.state.itemList[len-1].id+1
+        }
           const item = {
               label:text,
               important:false,
@@ -60,24 +65,54 @@ export default class App extends Component{
             }
         })
     };
+    filte(items, filter){
+        switch (filter) {
+            case 'all':
+                return items;
+            case 'active':
+                return items.filter((items) => !items.done);
+            case 'done':
+                return items.filter((items) => items.done);
+            default:
+                return items;
+        }
+    }
+
+    search (items, term) {
+        if(term.length===0){
+            return items;
+        }
+        return items.filter((items)=>{
+            return items.label.toLowerCase().indexOf(term.toLowerCase()) > -1;
+        });
+    }
+
+    onSerchChange = (term) =>{
+        this.setState({term})
+    };
+    onFilterChange = (filter) =>{
+        this.setState({filter})
+    };
     render() {
 
         const countDone = this.state.itemList.filter((el)=>el.done).length;
         const countTodo = this.state.itemList.length - countDone;
         const countTotal = this.state.itemList.length;
 
+        const {itemList, term, filter} = this.state;
+        const visible = this.filte(this.search(itemList, term),filter);
         return(
             <div className="todo-app">
                 <AppHeader total={countTotal} toDo={countTodo} done={countDone} />
                 <div className="top-panel d-flex">
-                    <SearchTask/>
-                    <ItemStatusFilter />
+                    <SearchTask onSerchChange={this.onSerchChange}/>
+                    <ItemStatusFilter onFilterChange={this.onFilterChange} filter={filter}/>
                 </div>
                 <TodoList
                     onDone={this.onDone}
                     onImportant={this.onImportant}
                     onDelete={this.onDelete}
-                    itemList={this.state.itemList}/>
+                    itemList={visible}/>
                    <AddItem onUpdate={this.onUpdate}/>
             </div>
         )
